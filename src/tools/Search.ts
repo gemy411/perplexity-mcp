@@ -1,8 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { AxiosInstance } from "axios";
 import { z } from "zod";
+import { PerplexityModel } from "../pplx/models.js";
 
-export function addSearchTool(server: McpServer, axiosInstance: AxiosInstance) {
+export function addSearchTool(server: McpServer, axiosInstance: AxiosInstance, model: PerplexityModel = PerplexityModel.SONAR) {
     server.tool(
       "pplx-search",
       "Search tool to get up to date responses on any topic. use it as online pair programmer. this is a search query, the more accurate and more context there is the better.",
@@ -18,7 +19,7 @@ export function addSearchTool(server: McpServer, axiosInstance: AxiosInstance) {
           }
     
           const response = await axiosInstance.post("/chat/completions", {
-            model: "sonar",
+            model: model,
             messages: [{ role: "user", content: query }],
           });
     

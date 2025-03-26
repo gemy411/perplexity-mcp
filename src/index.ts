@@ -2,6 +2,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import axios, { AxiosInstance } from "axios";
 import { addSearchTool } from "./tools/Search.js"; 
+import { addErrorFixingTool } from "./tools/error-fixing.js";
+import { PerplexityModel } from "./pplx/models.js";
 
 // Check for API key
 const perplexityApiKey = process.env.PERPLEXITY_API_KEY;
@@ -24,11 +26,11 @@ const server = new McpServer({
   name: "Perplexity MCP Server",
   version: "0.0.1"
 });
-
 // Handle server connection with basic error handling
 const transport = new StdioServerTransport();
 try {
-  addSearchTool(server, axiosInstance);
+  addSearchTool(server, axiosInstance, PerplexityModel.SONAR);
+  addErrorFixingTool(server, axiosInstance, PerplexityModel.SONAR);
   await server.connect(transport);
 } catch (error) {
   console.error("Failed to connect to transport:", error);
