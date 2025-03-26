@@ -190,7 +190,7 @@ export class ConfigManager {
     return {
       apiKey,
       databasePath: dbPath,
-      model: "sonar-reasoning-pro"
+      model: "sonar"
     };
   }
 }

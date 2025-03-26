@@ -1,7 +1,7 @@
 {
   "name": "perplexity-server",
-  "version": "0.1.0",
-  "description": "alls upon perplexity api while i code to get docs, find apis to integrate, and to check deprecated code to make sure everything works properl",
+  "version": "0.0.1",
+  "description": "Smart perplexity mcp server",
   "private": true,
   "type": "module",
   "bin": {
@@ -18,12 +18,10 @@
     "test": "tsc --noEmit"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "0.6.0",
-    "axios": "^1.7.9",
-    "better-sqlite3": "^11.8.1"
+    "@modelcontextprotocol/sdk": "1.8.0",
+    "axios": "^1.8.4"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.12",
     "@types/node": "^20.11.24",
     "typescript": "^5.3.3"
   }
