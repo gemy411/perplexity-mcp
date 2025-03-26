@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import axios, { AxiosInstance } from "axios";
-import { addSearchTool } from "./tools/Search.js"; 
+import { addSearchTool } from "./tools/search.js"; 
 import { addErrorFixingTool } from "./tools/error-fixing.js";
 import { PerplexityModel } from "./pplx/models.js";
 
