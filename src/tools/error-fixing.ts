@@ -6,21 +6,24 @@ import { PerplexityModel } from "../pplx/models.js";
 export function addErrorFixingTool(server: McpServer, axiosInstance: AxiosInstance, model: PerplexityModel = PerplexityModel.SONAR) {
     server.tool(
         "pplx-error-fixing",
-        "Error fixing tool to search for fixes of errors in code. this is a code snippet, the more accurate and more context there is the better.",
-        { code: z.string() },
-        async ({ code }) => {
+        "Error fixing tool to search for fixes of errors in code or command line.",
+        {   
+            query: z.string().describe("Search query to fix the error"),
+            errorSnippet: z.string().optional().describe("Error snippet as a reference, use only what's relevant to the error")
+         },
+        async ({ query, errorSnippet }) => {
             try {
                 // Simple input validation
-                if (!code.trim()) {
+                if (!query.trim()) {
                     return {
                         isError: true,
-                        content: [{ type: "text", text: "Error: Code cannot be empty" }]
+                        content: [{ type: "text", text: "Error: Search query cannot be empty" }]
                     };
                 }
         
                 const response = await axiosInstance.post("/chat/completions", {
                     model: model,
-                    messages: [{ role: "user", content: `Fix the following code: ${code}` }],
+                    messages: [{ role: "user", content: `${query} ${errorSnippet ? `\n\nError Snippet:\n${errorSnippet}` : ""}` }],
                 });
         
                 return {

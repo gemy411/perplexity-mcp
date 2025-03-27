@@ -7,8 +7,11 @@ export function addSearchTool(server: McpServer, axiosInstance: AxiosInstance, m
     server.tool(
       "pplx-search",
       "Search tool to get up to date responses on any topic. use it as online pair programmer. this is a search query, the more accurate and more context there is the better.",
-      { query: z.string() },
-      async ({ query }) => {
+      { 
+        query: z.string().describe("Search query"),
+        code: z.string().optional().describe("Code as a reference, use only what's relevant to the search")
+       },
+      async ({ query, code }) => {
         try {
           // Simple input validation
           if (!query.trim()) {
@@ -20,7 +23,7 @@ export function addSearchTool(server: McpServer, axiosInstance: AxiosInstance, m
     
           const response = await axiosInstance.post("/chat/completions", {
             model: model,
-            messages: [{ role: "user", content: query }],
+            messages: [{ role: "user", content: `${query} ${code ? `\n\nCode:\n${code}` : ""}` }],
           });
     
           return {
