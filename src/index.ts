@@ -43,4 +43,4 @@ const server = new McpServer({
 // });
 
 const searchUseCase = getSearchUseCase();
-console.log(searchUseCase.execute({ query: "real madrid current standings", code: none, depth: "shallow" }).then(result => console.log(result)).catch(error => console.error(error)));
+console.log(searchUseCase.execute({ query: "fs-ts/Option package not found", code: none, depth: "medium", mode: "error_fix" }).then(result => console.log(result)).catch(error => console.error(error)));

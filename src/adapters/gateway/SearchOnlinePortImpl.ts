@@ -15,7 +15,16 @@ export class SearchOnlinePortImpl implements SearchOnlinePort {
   async searchOnline(params: SearchOnlineParams): Promise<Either<Error, SearchResult>> {
     let code = toNullable(params.code);
     let query = `${params.query} ${code? `Code: ${code}` : ""}`
-    let remoteParams = new SearchRemoteParams(query, some("be percise, you are talking to a machine only generate pure content") ,params.depth);
+    let systemMessage
+    switch(params.mode) {
+      case "normal":
+        systemMessage = "be percise, you are talking to a machine only generate pure content";
+        break;
+      case "error_fix":
+        systemMessage = "be percise, you are talking to a machine only generate pure content, respond with what can only be used to fix the error";
+        break;
+    }
+    let remoteParams = new SearchRemoteParams(query, some(systemMessage) ,params.depth);
     return pipe(
       await this.searchOnlineRemotePort.searchOnline(remoteParams),
       map((result) => new SearchResult(result.message))

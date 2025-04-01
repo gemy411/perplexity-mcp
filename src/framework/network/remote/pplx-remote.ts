@@ -21,7 +21,7 @@ export class PerplexityRemote implements SearchOnlineRemotePort {
         model = PerplexityModel.SONAR;
         break;
       case "medium":
-        model = PerplexityModel.SONAR_PRO;
+        model = PerplexityModel.SONAR;
         break;
       case "deep":
         model = PerplexityModel.SONAR_PRO;
@@ -47,7 +47,7 @@ export class PerplexityRemote implements SearchOnlineRemotePort {
         searchContextSize = "medium";
         break;
       case "medium":
-        searchContextSize = "medium";
+        searchContextSize = "high";
         break;
       case "deep":
         searchContextSize = "high";
