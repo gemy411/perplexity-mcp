@@ -14,8 +14,8 @@ export class PerplexityRemote implements SearchOnlineRemotePort {
     let query = params.query;
     let depth = params.depth;
 
+    // Determine model based on depth
     let model: PerplexityModel
-    
     switch(depth) {
       case "shallow":
         model = PerplexityModel.SONAR;
@@ -28,6 +28,7 @@ export class PerplexityRemote implements SearchOnlineRemotePort {
         break;
     }
 
+    // Determine timeout based on depth
     let timeout;
     switch(depth) {
       case "shallow":
@@ -41,6 +42,7 @@ export class PerplexityRemote implements SearchOnlineRemotePort {
         break;
     }
 
+    // Determine search context size based on depth
     let searchContextSize: "low" | "medium" | "high" = "low";
     switch(depth) {
       case "shallow":
@@ -53,14 +55,17 @@ export class PerplexityRemote implements SearchOnlineRemotePort {
         searchContextSize = "high";
         break;
     }
-    let webSearchOptions= {
-      search_context_size: searchContextSize
-    }
     
+    // Check for missing API key
+    const apiKey = process.env.PERPLEXITY_API_KEY;
+    if (!apiKey) {
+      return left(new Error("Missing Perplexity API key"));
+    }
+    // Create axios instance
     let axiosInstance = axios.create({
       baseURL: "https://api.perplexity.ai",
       headers: {
-        "Authorization": `Bearer ${process.env.PERPLEXITY_API_KEY}`,
+        "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json"
       },
       timeout: timeout
@@ -70,6 +75,7 @@ export class PerplexityRemote implements SearchOnlineRemotePort {
       if (!query.trim()) {
         return left(new Error("Search query cannot be empty"));
       }
+      // Add request and response logging
       axiosInstance.interceptors.request.use(request => {
         console.log('Starting Request', request);
         return request;
@@ -79,15 +85,18 @@ export class PerplexityRemote implements SearchOnlineRemotePort {
         console.log('Response:', response);
         return response;
       });
+      // Build messages
+      // if system message is none, use default
       const messages = pipe(
         params.systemMessage, match(
         () => [{role: "user", content: `${query}`}],
         (result: string) => [{role: "system", content: result},{role: "user", content: `${query}`}],
       ));
+      // Call Perplexity API
       const response = await axiosInstance.post("/chat/completions", {
         model: model,
         messages: messages,
-        web_search_options: webSearchOptions,
+        web_search_options: {search_context_size: searchContextSize},
       });
 
       return right(new SearchRemoteResult(response.data.choices[0].message.content));
