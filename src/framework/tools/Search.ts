@@ -1,10 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { SearchOnlineUseCase } from "../usecase/search/search-online-usecase.js";
+import { SearchOnlineUseCase } from "../../usecase/search/search-online-usecase.js";
 import { fromNullable } from "fp-ts/lib/Option.js";
-import { pipe } from "fp-ts/function"
+import { pipe } from "fp-ts/lib/function.js"
 import { match } from "fp-ts/lib/Either.js"
-import { SearchOnlineParams } from "../usecase/search/models/search-online-params.js";
+import { SearchOnlineParams } from "../../usecase/search/models/search-online-params.js";
 
 export function addSearchTool(server: McpServer, useCase: SearchOnlineUseCase) {
     server.tool(
