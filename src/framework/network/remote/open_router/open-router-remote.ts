@@ -10,7 +10,7 @@ import { SearchRemoteParams } from "../../../../adapters/models/search-remote-pa
 import { getOrElse } from "fp-ts/lib/Option.js";
 import { OpenRouterModels } from "./models/open-router-models.js";
 
-export class PerplexityRemote implements SearchOnlineRemotePort {
+export class OpenRouterRemote implements SearchOnlineRemotePort {
   async searchOnline(params: SearchRemoteParams): Promise<Either<Error, SearchRemoteResult>> {
     let query = params.query;
     let depth = params.depth;
