@@ -1,5 +1,5 @@
-import { SearchRemoteResult } from "../../../adapters/models/search-remote-result.js";
-import { SearchOnlineRemotePort } from "../../../adapters/ports/search-online-remote.js";
+import { SearchRemoteResult } from "../../../../adapters/models/search-remote-result.js";
+import { SearchOnlineRemotePort } from "../../../../adapters/ports/search-online-remote.js";
 import { Either } from "fp-ts/lib/Either.js";
 import { left } from "fp-ts/lib/Either.js";
 import { match} from "fp-ts/lib/Option.js";
@@ -7,7 +7,7 @@ import { pipe } from "fp-ts/lib/function.js";
 import axios from "axios";
 import { PerplexityModel } from "./models/pplx-models.js";
 import { right } from "fp-ts/lib/Either.js";
-import { SearchRemoteParams } from "../../../adapters/models/search-remote-params.js";
+import { SearchRemoteParams } from "../../../../adapters/models/search-remote-params.js";
 
 export class PerplexityRemote implements SearchOnlineRemotePort {
   async searchOnline(params: SearchRemoteParams): Promise<Either<Error, SearchRemoteResult>> {
