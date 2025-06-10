@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Smart perplexity mcp server",
   "private": true,
+  "main": "index.js",
   "type": "module",
   "bin": {
     "perplexity-server": "./build/index.js"
