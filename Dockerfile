@@ -6,7 +6,6 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-# Use regular npm install instead of ci, and clean cache afterward
 RUN npm install --ignore-scripts && \
     npm cache clean --force
 
@@ -24,23 +23,22 @@ RUN addgroup -g 1001 -S nodejs && \
 # Set the working directory
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Copy only production dependencies
 COPY package*.json ./
-# Use regular npm install with production flag
-RUN npm install  --ignore-scripts --omit=dev && \
+RUN npm install --ignore-scripts --omit=dev && \
     npm cache clean --force
 
-# Copy built application from builder stage
-COPY --from=builder /app/build ./build
+# Copy built application from builder stage, set ownership
+COPY --chown=nodejs:nodejs --from=builder /app/build ./build
 
-# Change ownership to nodejs user
-RUN chown -R nodejs:nodejs /app
+# Set environment variables for production and port
+ENV NODE_ENV=production \
+    PORT=3000
+
+# Switch to non-root user
 USER nodejs
 
-# Expose the application port
-# Optionally expose port from environment variable, default to 3000
-ARG PORT=3000
-EXPOSE ${PORT}
+EXPOSE $PORT
 
 # Start the application
 CMD ["node", "build/index.js"]
