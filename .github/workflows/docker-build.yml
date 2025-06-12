@@ -30,3 +30,7 @@ jobs:
         context: .
         push: true
         tags: ghcr.io/${{ github.repository }}:latest
+    - name: Trigger deployment
+      run: |
+        echo "Triggering deployment API…"
+        curl -fsSL "http://45.147.250.137:3000/api/deploy/6e916702493b1f9444c4bbba451ed598f4ced45f5df085cf"

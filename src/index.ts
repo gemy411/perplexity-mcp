@@ -1,16 +1,30 @@
 import { getSearchUseCase } from "./framework/di/factory.js";
 import { addErrorFixingTool } from "./framework/tools/error-fixing.js";
 import { addSearchTool } from "./framework/tools/Search.js";
-import express from "express";
+import express, { Request, Response, NextFunction } from 'express';
 import { randomUUID } from "node:crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
-import type { Request, Response } from "express";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import 'dotenv/config'
 
+const API_KEYS: string[] = process.env.API_KEYS
+  ? process.env.API_KEYS.split(',').map(k => k.trim())
+  : [];
+
+function requireApiKey(req: Request, res: Response, next: NextFunction): void {
+  const key = req.get('x-api-key') || (req.query.api_key as string | undefined);
+  if (!key || !API_KEYS.includes(key)) {
+    res.status(401).json({ error: 'Invalid or missing API key' });
+    return;
+  }
+  next();
+}
+
 const app = express();
+
+app.use(requireApiKey);
 app.use(express.json());
 const server = new McpServer({
       name: "Perplexity MCP Server",
