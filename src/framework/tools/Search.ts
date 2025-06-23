@@ -8,7 +8,7 @@ import { SearchOnlineParams } from "../../usecase/search/models/search-online-pa
 
 export function addSearchTool(server: McpServer, useCase: SearchOnlineUseCase) {
     server.tool(
-      "search-search",
+      "search-online",
       "Search tool to get up to date responses on any topic. use it as online pair programmer. this is a search query, the more accurate and more context there is the better.",
       { 
         query: z.string().describe("Search query"),

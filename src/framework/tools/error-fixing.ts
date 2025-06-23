@@ -7,7 +7,7 @@ import { pipe } from "fp-ts/lib/function.js"
 import { match } from "fp-ts/lib/Either.js"
 export function addErrorFixingTool(server: McpServer, useCase: SearchOnlineUseCase) {
     server.tool(
-        "search-error-fixing",
+        "search-online-error",
         "Error fixing tool to search for fixes of errors in code or command line.",
         {   
             query: z.string().describe("Search query to fix the error"),
