@@ -1,10 +1,13 @@
-import { SearchRemoteResult } from "../../../../adapters/models/search-remote-result.js";
+import { GoogleGenAI, Part } from "@google/genai";
+import { SearchRemoteParams } from "../../../../adapters/models/search-remote-params.js";
+import {
+  Citation,
+  SearchRemoteResult,
+} from "../../../../adapters/models/search-remote-result.js";
 import { SearchOnlineRemotePort } from "../../../../adapters/ports/search-online-remote.js";
 import { Either, left, right } from "fp-ts/lib/Either.js";
 import { pipe } from "fp-ts/lib/function.js";
 import { match } from "fp-ts/lib/Option.js";
-import { GoogleGenAI } from "@google/genai";
-import { SearchRemoteParams } from "../../../../adapters/models/search-remote-params.js";
 
 export enum GoogleModels {
   /**
@@ -58,50 +61,82 @@ export class GoogleRemote implements SearchOnlineRemotePort {
         maxOutputTokens = 4000;
         break;
       case "medium":
-        maxOutputTokens = 10048;
+        maxOutputTokens = 4000;
         break;
       case "deep":
-        maxOutputTokens = 20000;
+        maxOutputTokens = 10000;
         break;
     }
-
-    const generationConfig = {
-      tools: [groundingTool],
-      maxOutputTokens: maxOutputTokens,
-      systemInstruction: pipe(
-        params.systemMessage,
-        match(
-          () => "",
-          (systemMessage: string) => systemMessage
-        )
-      ),
-    };
 
     try {
       if (!query.trim()) {
         return left(new Error("Search query cannot be empty"));
       }
 
-      console.log(
-        "Sending messages to Google:",
-        JSON.stringify(generationConfig, null, 2)
-      );
+      const generationConfig = {
+        tools: [groundingTool],
+        temperature: 1.0,
+        maxOutputTokens: maxOutputTokens,
+        systemInstruction: pipe(
+          params.systemMessage,
+          match(
+            () => "",
+            (systemMessage: string) => systemMessage
+          )
+        ),
+      };
       const request = {
         model: modelName,
         contents: params.query,
         config: generationConfig,
       };
-      
+      console.log(
+        "Sending messages to Google:",
+        JSON.stringify(request, null, 2)
+      );
+    
       const response = await ai.models.generateContent(request);
-      const textContent = response.text;
-      if (textContent) {
-        return right(new SearchRemoteResult(textContent));
-      } else {
-        return left(new Error("No content found in Google Gemini API response"));
+
+      const candidate = response.candidates?.[0];
+
+      if (!candidate || !candidate.content || !candidate.content.parts) {
+        return left(
+          new Error("No content found in Google Gemini API response")
+        );
+      }
+
+      const textContent = candidate.content.parts
+        .map((part: Part) => part.text)
+        .join("");
+        
+        if (textContent) {
+          const groundingMetadata = candidate.groundingMetadata;
+          let citations: Citation[] = [];
+  
+          if (groundingMetadata?.groundingChunks) {
+            citations = groundingMetadata.groundingChunks.map((chunk: any) => ({
+              uri: chunk.web.uri,
+              title: chunk.web.title,
+            }));
+          }
+  
+          const searchQueries = groundingMetadata?.webSearchQueries || [];
+          const resultObj = new SearchRemoteResult(
+            textContent,
+            citations,
+            searchQueries
+          );
+          console.log("GoogleRemote result:", resultObj);
+          return right(resultObj);
+        } else {
+        const errorMessage = "No content found in Google Gemini API response";
+        console.error(errorMessage);
+        return left(new Error(errorMessage));
       }
     } catch (error) {
-      console.error("Error processing search query:", error);
-      return left(new Error(`Error: ${error instanceof Error ? error.message : String(error)}`));
+      const errorMessage = `Error: ${error instanceof Error ? error.message : String(error)}`;
+      console.error(errorMessage);
+      return left(new Error(errorMessage));
     }
   }
 } 

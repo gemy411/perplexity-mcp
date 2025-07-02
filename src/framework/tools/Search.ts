@@ -5,6 +5,7 @@ import { fromNullable } from "fp-ts/lib/Option.js";
 import { pipe } from "fp-ts/lib/function.js"
 import { match } from "fp-ts/lib/Either.js"
 import { SearchOnlineParams } from "../../usecase/search/models/search-online-params.js";
+import { mapSearchResult } from "./mapper.js";
 
 export function addSearchTool(server: McpServer, useCase: SearchOnlineUseCase) {
     server.tool(
@@ -26,12 +27,14 @@ export function addSearchTool(server: McpServer, useCase: SearchOnlineUseCase) {
                     text: `Error: ${error instanceof Error ? error.message : String(error)}` 
                 }]
             }),
-            (result) => ({
+            (result) => {
+                return {
                 content: [{ 
                     type: "text", 
-                    text: result.message 
+                    text: mapSearchResult(result)
                 }]
-            })
+                }
+            }
         ))
       }
     );
