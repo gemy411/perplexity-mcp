@@ -48,7 +48,6 @@ export class GoogleRemote implements SearchOnlineRemotePort {
       apiKey: apiKey,
     });
 
-    // Define the grounding tool
     const groundingTool = {
       googleSearch: {},
     };
@@ -65,11 +64,17 @@ export class GoogleRemote implements SearchOnlineRemotePort {
         maxOutputTokens = 20000;
         break;
     }
-    // Configure generation settings
+
     const generationConfig = {
       tools: [groundingTool],
-      // Adjust max output tokens based on depth or other factors if needed
       maxOutputTokens: maxOutputTokens,
+      systemInstruction: pipe(
+        params.systemMessage,
+        match(
+          () => "",
+          (systemMessage: string) => systemMessage
+        )
+      ),
     };
 
     try {
@@ -77,24 +82,17 @@ export class GoogleRemote implements SearchOnlineRemotePort {
         return left(new Error("Search query cannot be empty"));
       }
 
-      const messages = pipe(
-        params.systemMessage,
-        match(
-          () => [{ role: "user", parts: [{ text: query }] }],
-          (result: string) => [
-            { role: "system", parts: [{ text: result }] },
-            { role: "user", parts: [{ text: query }] },
-          ]
-        )
+      console.log(
+        "Sending messages to Google:",
+        JSON.stringify(generationConfig, null, 2)
       );
-
-      console.log("Sending messages to Google:", JSON.stringify(messages, null, 2));
-      const response = await ai.models.generateContent({
+      const request = {
         model: modelName,
-        contents: messages,
+        contents: params.query,
         config: generationConfig,
-      });
-
+      };
+      
+      const response = await ai.models.generateContent(request);
       const textContent = response.text;
       if (textContent) {
         return right(new SearchRemoteResult(textContent));
