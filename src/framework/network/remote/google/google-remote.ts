@@ -75,6 +75,7 @@ export class GoogleRemote implements SearchOnlineRemotePort {
 
       const generationConfig = {
         tools: [groundingTool],
+        temperature: 1.0,
         maxOutputTokens: maxOutputTokens,
         systemInstruction: pipe(
           params.systemMessage,
