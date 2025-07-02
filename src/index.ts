@@ -27,8 +27,8 @@ const app = express();
 app.use(requireApiKey);
 app.use(express.json());
 const server = new McpServer({
-      name: "Perplexity MCP Server",
-      description: "Perplexity MCP Server is always used to find online and up to date information. It's a search tool that can be used to find information on any topic.",
+      name: "Online search MCP Server",
+      description: "Online search MCP Server is always used to find online and up to date information. It's a search tool that can be used to find information on any topic.",
       version: "1.0.0",
     });
 const useCase = getSearchUseCase()

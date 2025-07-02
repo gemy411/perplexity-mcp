@@ -1,5 +1,4 @@
-
-# Perplexity MCP Server
+# Online Search MCP Server
 
 ## API Key Selection
 

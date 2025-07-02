@@ -1,9 +1,9 @@
 {
-  "name": "perplexity-server",
-  "version": "0.0.1",
-  "description": "Smart perplexity mcp server",
+  "name": "online-search-mcp-server",
+  "version": "1.0.0",
+  "description": "Generic Search MCP Server",
   "private": true,
-  "main": "index.js",
+  "main": "build/index.js",
   "type": "module",
   "bin": {
     "perplexity-server": "./build/index.js"
