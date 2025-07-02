@@ -18,16 +18,16 @@ export class SearchOnlinePortImpl implements SearchOnlinePort {
     let systemMessage
     switch(params.mode) {
       case "normal":
-        systemMessage = "be percise, you are talking to a machine only generate pure content";
+        systemMessage = "be percise, you are talking to a machine only generate pure content, provide code snippets if needed";
         break;
       case "error_fix":
-        systemMessage = "be percise, you are talking to a machine only generate pure content, respond with what can only be used to fix the error";
+        systemMessage = "be percise, you are talking to a machine only generate pure content, respond with what can only be used to fix the error, provide code snippets if needed";
         break;
     }
     let remoteParams = new SearchRemoteParams(query, some(systemMessage) ,params.depth);
     return pipe(
       await this.searchOnlineRemotePort.searchOnline(remoteParams),
-      map((result) => new SearchResult(result.message))
+      map((result) => new SearchResult(result.message, result.citations, result.searchQueries))
     );
   }
 }

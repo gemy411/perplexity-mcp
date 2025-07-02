@@ -1,4 +1,7 @@
-import { SearchRemoteResult } from "../../../../adapters/models/search-remote-result.js";
+import {
+  Citation,
+  SearchRemoteResult,
+} from "../../../../adapters/models/search-remote-result.js";
 import { SearchOnlineRemotePort } from "../../../../adapters/ports/search-online-remote.js";
 import { Either } from "fp-ts/lib/Either.js";
 import { left } from "fp-ts/lib/Either.js";
@@ -99,10 +102,23 @@ export class PerplexityRemote implements SearchOnlineRemotePort {
         web_search_options: {search_context_size: searchContextSize},
       });
 
-      return right(new SearchRemoteResult(response.data.choices[0].message.content));
+      const choice = response.data.choices[0];
+      const message = choice.message;
+
+      const citations: Citation[] =
+        response.data.citations?.map((citation: any) => ({
+          uri: citation.url,
+          title: citation.title,
+        })) || [];
+      const searchQueries = response.data.search_queries || [];
+
+      const resultObj = new SearchRemoteResult(message.content, citations, searchQueries)
+      console.log("PerplexityRemote result:", resultObj);
+      return right(resultObj);
     } catch (error) {
-      console.error("Error processing search query:", error);
-      return left(new Error(`Error: ${error instanceof Error ? error.message : String(error)}`));
+      const errorMessage = `Error: ${error instanceof Error ? error.message : String(error)}`;
+      console.error(errorMessage);
+      return left(new Error(errorMessage));
     }
   }
 }

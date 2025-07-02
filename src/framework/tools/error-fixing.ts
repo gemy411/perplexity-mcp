@@ -5,6 +5,7 @@ import { SearchOnlineParams } from "../../usecase/search/models/search-online-pa
 import { fromNullable } from "fp-ts/lib/Option.js";
 import { pipe } from "fp-ts/lib/function.js"
 import { match } from "fp-ts/lib/Either.js"
+import { mapSearchResult } from "./mapper.js";
 export function addErrorFixingTool(server: McpServer, useCase: SearchOnlineUseCase) {
     server.tool(
         "search-online-error",
@@ -25,12 +26,14 @@ export function addErrorFixingTool(server: McpServer, useCase: SearchOnlineUseCa
                         text: `Error: ${error instanceof Error ? error.message : String(error)}` 
                     }]
                 }),
-                (result) => ({
-                    content: [{ 
-                        type: "text", 
-                        text: result.message 
-                    }]
-                })
+                (result) => {
+                    return {
+                        content: [{ 
+                            type: "text", 
+                            text: mapSearchResult(result)
+                        }]
+                    }
+                }
             ))
         }
     );
