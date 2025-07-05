@@ -1,0 +1,12 @@
+{
+  "selectedAuthType": "gemini-api-key",
+  "theme": "Default",
+ "mcpServers": {
+    "online_search": {
+      "server_url": "https://gemy-n8n-pplx-mcp.pcpeta.easypanel.host/mcp",
+      "headers": {
+          "x-api-key": "533zHGFmHleLKDGZtcukEtHAbl5FxjQ3huPaKzu-TKPpcuvUMRVysRa2ia4-5qv"
+      }
+    }
+	}
+}
